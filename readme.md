@@ -11,15 +11,18 @@ After entering your friends' nicknames, the bot draws between 2 teams and distri
 First what you should do is type **$team help** and you will see:
 
 List of command:
-     - $team showlist - show list of added users
-     - $team clear - Clear all list of players
-     - $team add *<user> <user> ... - add user to the list
-     - $team remove *<user> <user> ... - remove user from the list
-     - $team rand - Randomize all teams (team 1, team 2)
-     - $team score - Show score of team 1 and 2
-     - $team addpoint 1 - add one point to team 1
-     - $team addpoint 2 - add one point to team 2
-     - $team reset - Clear scores of team 1 and 2
+<ul>
+    <li> $team showlist - show list of added users </li>
+    <li> $team clear - Clear all list of players </li>
+    <li> $team add *<user> <user> ... - add user to the list </li>
+    <li> $team remove *<user> <user> ... - remove user from the list </li>
+    <li> $team rand - Randomize all teams (team 1, team 2) </li>
+    <li> $team score - Show score of team 1 and 2 </li>
+    <li> $team addpoint 1 - add one point to team 1 </li>
+    <li> $team addpoint 2 - add one point to team 2 </li>
+    <li> $team reset - Clear scores of team 1 and 2 </li>
+</ul>
 
 <h2> How it's look like </h2>
-[![Example 1](https://dictionary.cambridge.org/pl/images/thumb/pickax_noun_002_27543.jpg?version=5.0.180 "Example 1")](https://dictionary.cambridge.org/pl/images/thumb/pickax_noun_002_27543.jpg?version=5.0.180 "Example 1")
+<p>Example 1</p>
+<img src="https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/example1.png?raw=true">
