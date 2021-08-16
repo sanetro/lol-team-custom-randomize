@@ -27,33 +27,33 @@ def justify_lead_board(lol_squad):
   result = tmp2; i = 0
   for user in lol_squad:
     if i % 2 == 0:
-      result += "\t\t\t>>> - " + user + "\n"
+      result += "\t\t\t - " + user + "\n"
     i+=1 
   result += tmp3; i = 0
   for user in lol_squad:
     if i % 2 != 0:
-      result += "\t\t\t>>> - " + user + "\n"
+      result += "\t\t\t - " + user + "\n"
     i+=1 
   return result
 
 def justify_score_board(team1,team2):
   tmp = f'```diff\n\n+\t\tTeam 1\t\tTeam 2\n-\t\t  {team1}\t\t:\t  {team2}\n\n```'
   tmp = f'''
-  ```diff
-   ______________________________________________________
-  (__   __________________   ________________________   _)
-    | |                   | |                        | |
-  \t\t\tTEAM 1\t\t\t\t  TEAM 2                         
-  \t\t\t  {team1}\t\t\t\t\t\t{team2}                   
-   _| |___________________| |________________________| |
-  (_____________________________________________________) 
-  ```'''
+  >>>                Score
+  -------------------------
+    Team 1      :   **{team1}**
+    Team 2      :   **{team2}**
+  -------------------------
+  '''
   return tmp
 
 def returnListOfSqad_lol(lol_squad):
-  tmp = "Here is your users list:\n"
+  tmp = ">>> Here is your users list:\n"
+  iter = 1
   for user in lol_squad:
-    tmp +=  "\t- " + user + "\n"
+    tmp +=  f"{iter}\t" + user + "\n"
+    iter+=1
+  iter = 1
   return tmp 
 
 def getDatabaseTamplate():  
@@ -108,7 +108,7 @@ async def team(ctx, *args): #When user add more args then 2
       if args[0] == "add": # If i need to add user to list 
         print(len(args) + len(lol_squad))
         if len(args) + len(lol_squad) > 11: # you can't do it if users are more then 10
-          await ctx.send(f"I can't add user/users! Type only: {10 - len(lol_squad)} user/s")
+          await ctx.send(f"I can't add more users! On list: {10 - len(lol_squad)} user")
         else:
           for i in range(1, len(args)): # add args to list till the end
             lol_squad.append(args[i])
