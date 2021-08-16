@@ -3,7 +3,7 @@
 
 This Bot is for players who want to play 5v5 in League of Legends.<br><br>
 
-<h2> Discription </h2>
+<h2> Description </h2>
 
 After entering your friends' nicknames, the bot draws between 2 teams and distributes them to 2 channels at the discord's server. <b>Bot is still in beta phase </b>
 
