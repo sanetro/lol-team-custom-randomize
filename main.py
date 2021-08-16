@@ -27,12 +27,12 @@ def justify_lead_board(lol_squad):
   result = tmp2; i = 0
   for user in lol_squad:
     if i % 2 == 0:
-      result += "\t\t\t- " + user + "\n"
+      result += "\t\t\t>>> - " + user + "\n"
     i+=1 
   result += tmp3; i = 0
   for user in lol_squad:
     if i % 2 != 0:
-      result += "\t\t\t- " + user + "\n"
+      result += "\t\t\t>>> - " + user + "\n"
     i+=1 
   return result
 
@@ -78,7 +78,7 @@ async def team(ctx, *args): #When user add more args then 2
     #AddCurrServerToDatabase(server_curr_name)
     template = getDatabaseTamplate()
     #server_content = getDatabaseByServerName(server_curr_name) 
-    print(x)
+   
 
     args = list(args) # change zipped args from touple to array / list 
     args[0] = args[0].lower() # nessecery but protect you againts CAPSLOCK
@@ -174,16 +174,31 @@ async def on_message(message):
       await message.channel.send(welcomeText)
     else:
       await bot.process_commands(message)
-    
+
+@bot.command()
+async def createchannel(ctx, channelName):
+  guild = ctx.guild
+  mbed = discord.Embed(title='Success', description='{} has been created.'.format(channelName))
+  # if ctx.author.guild_permissions.manage_channels:
+  await guild.create_text_channel(name='{}'.format(channelName))
+  await ctx.send(embed=mbed)
+
+
 @bot.event
 async def on_ready():
+  
   print("STATUS MOD\tSTART")
   print(f"BOT NAME\t{bot.user.name}")
   print(f"BOT ID\t\t{bot.user.id}")
   print(f"DIRECTORY\tP{os.path.abspath(os.getcwd())}")
   await bot.change_presence(activity=discord.Game(name="Type: '$team help' or mention me "))
   # bot.change_presence(activity=discord.Game("Type: '$team help'")
- 
+  '''
+  for guild in bot.guilds: # guild stands for server
+      for channel in guild.channels:
+          if isinstance(channel, discord.TextChannel): # Check if channel is a text channel
+              await channel.send("Proszę szybko mnie usunąć. Może dojść do niepotrzebnych duplikowania się kanałów. Please remove me quickly. There may be unnecessary duplication of channels.")
+  '''
     
 
 keep_alive() # Flask serwer to keep bot alive 24/7
