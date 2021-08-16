@@ -179,9 +179,9 @@ async def on_message(message):
 async def createchannel(ctx, channelName):
   guild = ctx.guild
   mbed = discord.Embed(title='Success', description='{} has been created.'.format(channelName))
-  # if ctx.author.guild_permissions.manage_channels:
-  await guild.create_text_channel(name='{}'.format(channelName))
-  await ctx.send(embed=mbed)
+  if ctx.author.guild_permissions.manage_channels:
+    await guild.create_text_channel(name='{}'.format(channelName))
+    await ctx.send(embed=mbed)
 
 
 @bot.event
