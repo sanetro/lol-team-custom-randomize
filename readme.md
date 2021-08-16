@@ -1,7 +1,7 @@
 # LoL Team Custom Randomize
 <img src='https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/logo.png?raw=true' alt="LoLTeamCustomRandomize Logo" width="200" height="200">
-<img alt="LoLTeamCustomRandomize Robot" src="https://gamingsociety.pl/wp-content/uploads/article/o/3904.jpg" width="500" height="250">
-<img src='' alt="LoLTeamCustomRandomize Logo" width="200" height="200">
+<img alt="LoLTeamCustomRandomize Robot" src="https://gamingsociety.pl/wp-content/uploads/article/o/3904.jpg" width="500" height="250" style='float: left'> 
+
 This Bot is for players who want to play 5v5 in League of Legends.<br><br>
 
 <h2> Discription </h2>
