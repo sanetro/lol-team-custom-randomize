@@ -27,3 +27,5 @@ List of command:
 <h2> How it's look like </h2>
 <p>Example 1</p>
 <img src="https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/example1.png?raw=true">
+<p>Example 2</p>
+<img src="https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/example2.png?raw=true">
