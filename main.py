@@ -194,8 +194,9 @@ async def setup(ctx):
   guild = ctx.guild  
   mbed = discord.Embed(title='Bad permission', description='Can not create a channels.')
   if ctx.author.guild_permissions.manage_channels:
-    await guild.create_voice_channel(name='Team 1')
-    await guild.create_voice_channel(name='Team 2')
+    await guild.create_voice_channel(name='Team_1')
+    await guild.create_voice_channel(name='Team_2')
+    await guild.create_voice_channel(name='Lobby')
     mbed = discord.Embed(title='Success', description='Voice channels Team 1 and Team 2 has been created.')
     await ctx.send(embed=mbed)
   else:     
