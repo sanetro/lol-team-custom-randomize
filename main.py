@@ -6,6 +6,7 @@ import random
 import json
 from keep_alive import keep_alive
 from discord.ext import commands, tasks
+from discord.ext.commands import check
 
 
 #Leageu of legends teams container
@@ -19,21 +20,12 @@ bot = commands.Bot(command_prefix='$')
 
 # Function return entire board with seperate teams
 def justify_lead_board(lol_squad):
-  border = "="*34; tabs = "\t"*3
-  tmp2 = f'''```json
-  "{border}"\n  "{tabs}Team 1{tabs}\t"\n  "{border}"```'''
-  tmp3 = f'''```ini
-  [{border}]\n  [{tabs}Team 2{tabs}\t]\n  [{border}]```'''
-  result = tmp2; i = 0
-  for user in lol_squad:
-    if i % 2 == 0:
-      result += "\t\t\t - " + user + "\n"
-    i+=1 
-  result += tmp3; i = 0
-  for user in lol_squad:
-    if i % 2 != 0:
-      result += "\t\t\t - " + user + "\n"
-    i+=1 
+  border = "-"*34;
+  tabs = "\t"*3
+  tmp2 = f">>> {border}{border}\n  {tabs}Team 1{tabs}{tabs}{tabs}Team 2{tabs}\t\n {border}{border}\n"
+  result = tmp2
+  for i in range(len(lol_squad)//2):
+    result += tabs + lol_squad[i] + tabs*3 + lol_squad[i+5] + "\n"    
   return result
 
 def justify_score_board(team1,team2):
@@ -65,9 +57,21 @@ def getDatabaseTamplate():
 def serverCheckInDatabase(name):
   return True
 
-def getDatabaseByServerName(name):
-  pass
 
+@bot.command()
+async def e(ctx, member : discord.Member, *, reason=None):  
+  await member.move_to()
+
+def in_voice_channel():  # check to make sure ctx.author.voice.channel exists
+  def predicate(ctx):
+    return ctx.author.voice and ctx.author.voice.channel
+  return check(predicate)
+
+@in_voice_channel()
+@bot.command()
+async def m(ctx, *, channel : discord.VoiceChannel):
+  for members in ctx.author.voice.channel.members:
+    await members.move_to(channel)
 
 @bot.command()
 async def team(ctx, *args): #When user add more args then 2
@@ -152,11 +156,21 @@ async def serwer(ctx):
     # ctx.message.author.send(ctx.message.guild.name)
     await ctx.send(ctx.message.guild.name)
 
+
+
+@bot.command()
+@commands.has_permissions(move_members=True)
+async def move(ctx, *, channel : discord.VoiceChannel):
+    author_ch = ctx.author.voice.channel.mention
+    for members in ctx.author.voice.channel.members:
+        await members.move_to(channel)
+    await ctx.send(f'Moved everyone in {author_ch} to {channel.mention}!')
+
 @bot.event
 async def on_message(message):
     mention = f'<@!{bot.user.id}>'
     welcomeText = f'''
-    Hello @everyone,
+    Hello everyone,
 
     I am a **{bot.user.name}** bot who can set teams in League of Legends. 
     Only applies to custom matches. I was created so that people would not unnecessarily go to some team draw web pages.
@@ -176,12 +190,17 @@ async def on_message(message):
       await bot.process_commands(message)
 
 @bot.command()
-async def createchannel(ctx, channelName):
-  guild = ctx.guild
-  mbed = discord.Embed(title='Success', description='{} has been created.'.format(channelName))
+async def setup(ctx):
+  guild = ctx.guild  
+  mbed = discord.Embed(title='Bad permission', description='Can not create a channels.')
   if ctx.author.guild_permissions.manage_channels:
-    await guild.create_text_channel(name='{}'.format(channelName))
+    await guild.create_voice_channel(name='Team 1')
+    await guild.create_voice_channel(name='Team 2')
+    mbed = discord.Embed(title='Success', description='Voice channels Team 1 and Team 2 has been created.')
     await ctx.send(embed=mbed)
+  else:     
+    await ctx.send("No permissions")
+
 
 
 @bot.event
