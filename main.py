@@ -1,5 +1,4 @@
 # Version: 1.0.7
-
 import discord 
 import os
 import random
@@ -7,20 +6,23 @@ import json
 from keep_alive import keep_alive
 from discord.ext import commands, tasks
 from discord.ext.commands import check
+intents = discord.Intents.default()
+intents.members = True
 
 
-#Leageu of legends teams container
-lol_squad = []
+lol_squad = [] # Leageu of legends teams container
+voice_channel_list = []
+voiceChannel_1, voiceChannel_2 = None, None
 team1, team2 = 0, 0
 
 
-#Client object app name - bot 
-#Command always start with '$' before
-bot = commands.Bot(command_prefix='$')
+bot = commands.Bot(intents=intents, command_prefix='$') # Client object app name - bot, command always start with '$' before
 
-# Function return entire board with seperate teams
+
+
+# -------- TEAMS BOARD -------- #
 def justify_lead_board(lol_squad):
-  border = "-"*34;
+  border = "-"*34
   tabs = "\t"*3
   tmp2 = f">>> {border}{border}\n  {tabs}Team 1{tabs}{tabs}{tabs}Team 2{tabs}\t\n {border}{border}\n"
   result = tmp2
@@ -28,6 +30,7 @@ def justify_lead_board(lol_squad):
     result += tabs + lol_squad[i] + tabs*3 + lol_squad[i+5] + "\n"    
   return result
 
+# -------- SCORES BOARD -------- #
 def justify_score_board(team1,team2):
   tmp = f'```diff\n\n+\t\tTeam 1\t\tTeam 2\n-\t\t  {team1}\t\t:\t  {team2}\n\n```'
   tmp = f'''
@@ -39,6 +42,7 @@ def justify_score_board(team1,team2):
   '''
   return tmp
 
+# -------- USERS LIST -------- #
 def returnListOfSqad_lol(lol_squad):
   tmp = ">>> Here is your users list:\n"
   iter = 1
@@ -57,9 +61,36 @@ def getDatabaseTamplate():
 def serverCheckInDatabase(name):
   return True
 
+# -------- MOVE ALL USERS -------- #
+def isUserInVoiceChannel():  # ctx.author.voice.channel exists
+  def checkIfUserIs(ctx):
+    return ctx.author.voice and ctx.author.voice.channel
+  return check(checkIfUserIs)
+
+@isUserInVoiceChannel() # You can't use this if users aren't in channels
 @bot.command()
-async def e(ctx, member : discord.Member, channel : discord.VoiceChannel, * , reason=None):  
+async def m(ctx):
+  tmp_user = discord.Member.mention = lol_squad[0]  
+  channel = discord.VoiceChannel.name = "Team_1"
+  await discord.Member.mention.move_to(channel)
+
+
+
+@bot.command()
+async def e(ctx, member : discord.Member=None, channel : discord.VoiceChannel=None):
+  [print(info) for info in dir(channel)]
+  [print(info) for info in dir(member)]
+  
+  
   await member.move_to(channel)
+  
+  
+  #print(lol_squad, "Here: ", type(lol_squad[0]))
+  #for members in ctx.author.voice.channel.members:
+  #  print("this: ", members.mention, type(members.mention))
+  #tmp_user = discord.Member.id
+  #await tmp_user.move_to(channel)
+    # await members.move_to(channel)
 
 # TODO:
 # Make a command which move all from team 1 and team 2 seperaly
@@ -67,26 +98,50 @@ async def e(ctx, member : discord.Member, channel : discord.VoiceChannel, * , re
 # $e [team1] channel_name
 # channel name is static
 
-def in_voice_channel():  # check to make sure ctx.author.voice.channel exists
-  def predicate(ctx):
-    return ctx.author.voice and ctx.author.voice.channel
-  return check(predicate)
 
-@in_voice_channel()
 @bot.command()
-async def m(ctx, *, channel : discord.VoiceChannel):
-  for members in ctx.author.voice.channel.members:
-    await members.move_to(channel)
+async def toChannels(ctx, member : discord.Member):
+  channel_1 = discord.VoiceChannel
+  channel_1.name = "Team_1"
+  print(channel_1.name)
+  #for i in member:
+  lol_squad.append(member)
+  #for user in lol_squad:
+  #  print(user.name)
+  await member.move_to(voice_channel_list[voiceChannel_1])
+  
+ 
+'''
+ # -------- TEAM COMMANDS - add -------- #
+  if args[0] == "add": # If i need to add user to list 
+    print(len(args) + len(lol_squad))
+    if len(args) + len(lol_squad) > 11: # you can't do it if users are more then 10
+      await ctx.send(f"I can't add more users! On list: {10 - len(lol_squad)} user")
+    else:
+      for i in range(1, len(args)): # add args to list till the end
+        lol_squad.append(args[i])
+      await ctx.send(f"Added: {args[1:]}\n") # inform me if you added
 
+  # -------- TEAM COMMANDS - remove -------- #
+  if args[0].lower() == "remove":  # delete every user name from list 
+    for i in range(1, len(args)):
+      try: 
+        lol_squad.remove(args[i]) # deleted: in list 
+        await ctx.send(f"Removed: {args[i]}\n") # deleted: message
+      except:
+        await ctx.send(f"Can't remove or doesn't exist: {args[i]}\n") # when user aren't in list
+'''
+
+# -------- TEAM COMMANDS -------- #
 @bot.command()
 async def team(ctx, *args): #When user add more args then 2
     global lol_squad, team1, team2 # containers
     
     server_curr_name = ctx.message.guild.name # name of server 
-    #if not serverCheckInDatabase(server_curr_name):
-    #AddCurrServerToDatabase(server_curr_name)
+    # if not serverCheckInDatabase(server_curr_name):
+    # AddCurrServerToDatabase(server_curr_name)
     template = getDatabaseTamplate()
-    #server_content = getDatabaseByServerName(server_curr_name) 
+    # server_content = getDatabaseByServerName(server_curr_name) 
    
 
     args = list(args) # change zipped args from touple to array / list 
@@ -104,33 +159,20 @@ async def team(ctx, *args): #When user add more args then 2
      - **$team reset** - Clear scores of team 1 and 2
     '''
     try:
+      # -------- TEAM COMMANDS - help -------- #
       if args[0] in ["help", "-h", "h"]: # If i need help just type this 
         await ctx.send(helpArgs)
 
+      # -------- TEAM COMMANDS - showlist -------- #
       if args[0] == "showlist": # show list of added users 
         await ctx.send(returnListOfSqad_lol(lol_squad))
 
+      # -------- TEAM COMMANDS - clear -------- #
       if args[0] == "clear": # If i need to clean up list 
         lol_squad = []
         await ctx.send("List is empty.")
 
-      if args[0] == "add": # If i need to add user to list 
-        print(len(args) + len(lol_squad))
-        if len(args) + len(lol_squad) > 11: # you can't do it if users are more then 10
-          await ctx.send(f"I can't add more users! On list: {10 - len(lol_squad)} user")
-        else:
-          for i in range(1, len(args)): # add args to list till the end
-            lol_squad.append(args[i])
-          await ctx.send(f"Added: {args[1:]}\n") # inform me if you added
-
-      if args[0].lower() == "remove":  # delete every user name from list 
-        for i in range(1, len(args)):
-          try: 
-            lol_squad.remove(args[i]) # deleted: in list 
-            await ctx.send(f"Removed: {args[i]}\n") # deleted: message
-          except:
-            await ctx.send(f"Can't remove or doesn't exist: {args[i]}\n") # when user aren't in list
-
+      # -------- TEAM COMMANDS - rand -------- #
       if args[0] == "rand": # here is a output of randomized users in each team
         if len(lol_squad) == 10:
           random.shuffle(lol_squad)
@@ -138,28 +180,36 @@ async def team(ctx, *args): #When user add more args then 2
         else:
           await ctx.send(f"Not enought number of users, wanted: {10 - len(lol_squad)}") # if you have less then 10 users
 
+      # -------- TEAM COMMANDS - score -------- #
       if args[0] == "score":
         await ctx.send(justify_score_board(team1,team2))
+
+      # -------- TEAM COMMANDS - addpoint - 1 -------- #
       if args[0] == "addpoint" and args[1] == "1":
         if team1 < 10:
           team1 += 1
-        await ctx.send(justify_score_board(team1,team2))      
+        await ctx.send(justify_score_board(team1,team2)) 
+
+      # -------- TEAM COMMANDS - addpoint - 2 -------- #
       if args[0] == "addpoint" and args[1] == "2":
         if team2 < 11:
           team2 += 1
         await ctx.send(justify_score_board(team1,team2))
+      
+      # -------- TEAM COMMANDS - reset -------- #
       if args[0] == "reset":
         team2, team1 = 0, 0
         await ctx.send(justify_score_board(team1,team2))
+
+    # -------- TEAM COMMANDS - error -------- #
     except IndexError:
       await ctx.send("Wrong command: type **$team help**") # bad entry
 pass
 
 @bot.command()
-async def serwer(ctx):
-    # {ctx.message.channel.mention}
-    # ctx.message.author.send(ctx.message.guild.name)
-    await ctx.send(ctx.message.guild.name)
+async def server(ctx):   
+  await ctx.message.author.send(voice_channel_list[voiceChannel_1])
+   
 
 
 
@@ -171,29 +221,38 @@ async def move(ctx, *, channel : discord.VoiceChannel):
         await members.move_to(channel)
     await ctx.send(f'Moved everyone in {author_ch} to {channel.mention}!')
 
+
+# -------- QUICK INFORMATION - when mention bot -------- #
 @bot.event
 async def on_message(message):
-    mention = f'<@!{bot.user.id}>'
-    welcomeText = f'''
-    Hello everyone,
-
-    I am a **{bot.user.name}** bot who can set teams in League of Legends. 
-    Only applies to custom matches. I was created so that people would not unnecessarily go to some team draw web pages.
-    To use me please write:"*$team help*" to learn the commands. For example:
-
-    *$team add* Apple Bannana Chair ...
-
-    (You should fill up to 10 slots), then:
-
-    *$team rand*
-
-    and voilà... contact: **sanetro26@gmai.com**
+  welcomeText = f'''>>>    Hello everyone,
+    I am a **{bot.user.name}**
+    Installation:
+    1. You should give admin permisions to this bot
+    2. $setup - it creates 3 channels important for this bot
+    3. $help - commands list
     '''
-    if mention in message.content:
-      await message.channel.send(welcomeText)
-    else:
-      await bot.process_commands(message)
+  mention = f'<@!{bot.user.id}>'    
+  if mention in message.content:
+    await message.channel.send(welcomeText)
+  else:
+    await bot.process_commands(message)
 
+# -------- FIND CHANNELS -------- #
+def fetchVoiceChannels():
+  global voiceChannel_1, voiceChannel_2
+  voice_channel_list = []
+  for guild in bot.guilds:
+      for channel in guild.voice_channels:
+          voice_channel_list.append(channel)
+  [print(i, info) for i, info in enumerate(voice_channel_list)]
+  if "Team_1" in voice_channel_list and "Team_2" in voice_channel_list:
+    voiceChannel_1 = voice_channel_list.index("Team_1")
+    voiceChannel_2 = voice_channel_list.index("Team_2")
+    print("Channels found: Success")
+
+
+# -------- CREATE CHANNELS -------- #
 @bot.command()
 async def setup(ctx):
   guild = ctx.guild  
@@ -202,29 +261,44 @@ async def setup(ctx):
     await guild.create_voice_channel(name='Team_1')
     await guild.create_voice_channel(name='Team_2')
     await guild.create_voice_channel(name='Lobby')
-    mbed = discord.Embed(title='Success', description='Voice channels Team 1 and Team 2 has been created.')
+    mbed = discord.Embed(title='Success', description='Voice channels Team 1, Team 2 and Lobby has been created.')
     await ctx.send(embed=mbed)
+    fetchVoiceChannels()
   else:     
     await ctx.send("No permissions")
 
+# -------- DELETE CHANNELS -------- #
+@bot.command()
+async def delete_setup(ctx):
+  existing_channel1 = discord.utils.get(ctx.guild.channels, name="Team_1")
+  existing_channel2 = discord.utils.get(ctx.guild.channels, name="Team_2")
+  existing_channel3 = discord.utils.get(ctx.guild.channels, name="Lobby")
+  if existing_channel1 is not None and existing_channel2 is not None and existing_channel3 is not None:
+    await existing_channel1.delete()    
+    await existing_channel2.delete() 
+    await existing_channel3.delete() 
+  else:
+    await ctx.send(f'No channel was found')
 
+@bot.command(name="members", description="Show the all list of members in this server")
+async def members(ctx):
+  [print(member) for member in ctx.guild.members]  
 
+# -------- WAKE UP SAMURAI - we have bot to burn -------- #
 @bot.event
-async def on_ready():
+async def on_ready(): 
+  msg = f'''
+  BOT NAME     {bot.user.name}
+  BOT ID       {bot.user.id}
+  DIRECTORY    {os.path.abspath(os.getcwd())}
+  ''' 
+  print(msg)
   
-  print("STATUS MOD\tSTART")
-  print(f"BOT NAME\t{bot.user.name}")
-  print(f"BOT ID\t\t{bot.user.id}")
-  print(f"DIRECTORY\tP{os.path.abspath(os.getcwd())}")
-  await bot.change_presence(activity=discord.Game(name="Type: '$team help' or mention me "))
-  # bot.change_presence(activity=discord.Game("Type: '$team help'")
-  '''
-  for guild in bot.guilds: # guild stands for server
-      for channel in guild.channels:
-          if isinstance(channel, discord.TextChannel): # Check if channel is a text channel
-              await channel.send("Proszę szybko mnie usunąć. Może dojść do niepotrzebnych duplikowania się kanałów. Please remove me quickly. There may be unnecessary duplication of channels.")
-  '''
-    
+  fetchVoiceChannels()
+
+  await bot.change_presence(activity=discord.Game(name="$team help or mention"))  
+  
+
 
 keep_alive() # Flask serwer to keep bot alive 24/7
 bot.run(os.getenv("TOKEN2")) # My key to bot
