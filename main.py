@@ -57,10 +57,15 @@ def getDatabaseTamplate():
 def serverCheckInDatabase(name):
   return True
 
-
 @bot.command()
-async def e(ctx, member : discord.Member, *, reason=None):  
-  await member.move_to()
+async def e(ctx, member : discord.Member, channel : discord.VoiceChannel, * , reason=None):  
+  await member.move_to(channel)
+
+# TODO:
+# Make a command which move all from team 1 and team 2 seperaly
+# team 1 = [lol_squad[0], lol_squad[1] ... lol_squad[4]]
+# $e [team1] channel_name
+# channel name is static
 
 def in_voice_channel():  # check to make sure ctx.author.voice.channel exists
   def predicate(ctx):
