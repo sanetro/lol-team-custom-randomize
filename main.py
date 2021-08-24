@@ -103,6 +103,7 @@ async def addme(ctx, *member : discord.Member):
 async def channel(ctx):  
   global lol_squad
   for user in lol_squad:
+    print("Primary channel switch:", voice_channel_list[voiceChannel_1])
     await user.move_to(voice_channel_list[voiceChannel_1])
   
   
@@ -241,20 +242,17 @@ def fetchVoiceChannels():
   for guild in bot.guilds:
       for channel in guild.voice_channels:
           voice_channel_list.append(channel)
+
+  print("Voice channels list:")
   [print(i, info) for i, info in enumerate(voice_channel_list)]  
-  try:
-    voiceChannel_1 = voice_channel_list.index("Team_1") 
-    print("Channel Team_1 found")
-  except:
-    voiceChannel_1 = 6
-    print("Error: Channel Team_1 not found")
-  try:
-    voiceChannel_2 = voice_channel_list.index("Team_2")
-    print("Channel Team_2 found")
-  except:  
-    voiceChannel_2 = 7
-    print("Error: Channel Team_2 not found")
+ 
+  for index, vc in enumerate(voice_channel_list):
+    if vc.name == "Team_1":
+      voiceChannel_1 = index; print("Team_1 found")      
+    if vc.name == "Team_2":
+      voiceChannel_2 = index; print("Team_2 found")
   
+
 
 
 # -------- CREATE CHANNELS -------- #
