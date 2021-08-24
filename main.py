@@ -77,12 +77,12 @@ async def m(ctx):
 
 
 @bot.command()
-async def e(ctx, member : discord.Member=None, channel : discord.VoiceChannel=None):
-  [print(info) for info in dir(channel)]
-  [print(info) for info in dir(member)]
-  
-  
-  await member.move_to(channel)
+async def addme(ctx, *member : discord.Member):
+  global lol_squad
+  for i in member:
+    lol_squad.append(i)
+    print("Added: ", i)
+  print(lol_squad[0])
   
   
   #print(lol_squad, "Here: ", type(lol_squad[0]))
@@ -100,15 +100,11 @@ async def e(ctx, member : discord.Member=None, channel : discord.VoiceChannel=No
 
 
 @bot.command()
-async def toChannels(ctx, member : discord.Member):
-  channel_1 = discord.VoiceChannel
-  channel_1.name = "Team_1"
-  print(channel_1.name)
-  #for i in member:
-  lol_squad.append(member)
-  #for user in lol_squad:
-  #  print(user.name)
-  await member.move_to(voice_channel_list[voiceChannel_1])
+async def channel(ctx):  
+  global lol_squad
+  for user in lol_squad:
+    await user.move_to(voice_channel_list[voiceChannel_1])
+  
   
  
 '''
@@ -241,15 +237,24 @@ async def on_message(message):
 # -------- FIND CHANNELS -------- #
 def fetchVoiceChannels():
   global voiceChannel_1, voiceChannel_2
-  voice_channel_list = []
+  global voice_channel_list
   for guild in bot.guilds:
       for channel in guild.voice_channels:
           voice_channel_list.append(channel)
-  [print(i, info) for i, info in enumerate(voice_channel_list)]
-  if "Team_1" in voice_channel_list and "Team_2" in voice_channel_list:
-    voiceChannel_1 = voice_channel_list.index("Team_1")
+  [print(i, info) for i, info in enumerate(voice_channel_list)]  
+  try:
+    voiceChannel_1 = voice_channel_list.index("Team_1") 
+    print("Channel Team_1 found")
+  except:
+    voiceChannel_1 = 6
+    print("Error: Channel Team_1 not found")
+  try:
     voiceChannel_2 = voice_channel_list.index("Team_2")
-    print("Channels found: Success")
+    print("Channel Team_2 found")
+  except:  
+    voiceChannel_2 = 7
+    print("Error: Channel Team_2 not found")
+  
 
 
 # -------- CREATE CHANNELS -------- #
@@ -291,12 +296,15 @@ async def on_ready():
   BOT NAME     {bot.user.name}
   BOT ID       {bot.user.id}
   DIRECTORY    {os.path.abspath(os.getcwd())}
+
   ''' 
   print(msg)
   
   fetchVoiceChannels()
 
   await bot.change_presence(activity=discord.Game(name="$team help or mention"))  
+
+
   
 
 
