@@ -20,6 +20,7 @@ bot = commands.Bot(intents=intents, command_prefix='$') # Client object app name
 
 
 
+
 # -------- TEAMS BOARD -------- #
 def justify_lead_board(lol_squad):
   border = "-"*34
@@ -47,65 +48,37 @@ def returnListOfSqad_lol(lol_squad):
   tmp = ">>> Here is your users list:\n"
   iter = 1
   for user in lol_squad:
-    tmp +=  f"{iter}\t" + user + "\n"
+    tmp +=  f"{iter}\t" + str(user.name) + "\n"
     iter+=1
   iter = 1
   return tmp 
 
-def getDatabaseTamplate():  
-  with open("db_temp.json") as file:
-    data = json.load(file)
-  return data
 
 
-def serverCheckInDatabase(name):
-  return True
+
+@bot.command()
+async def set(ctx, *members : discord.Member):
+  print("function name: set")
+  global lol_squad 
+  for user in members:
+    lol_squad.append(user)
+    print("Added: ", user)
+  
 
 # -------- MOVE ALL USERS -------- #
-def isUserInVoiceChannel():  # ctx.author.voice.channel exists
-  def checkIfUserIs(ctx):
-    return ctx.author.voice and ctx.author.voice.channel
-  return check(checkIfUserIs)
-
-@isUserInVoiceChannel() # You can't use this if users aren't in channels
 @bot.command()
-async def m(ctx):
-  tmp_user = discord.Member.mention = lol_squad[0]  
-  channel = discord.VoiceChannel.name = "Team_1"
-  await discord.Member.mention.move_to(channel)
-
-
-
-@bot.command()
-async def addme(ctx, *member : discord.Member):
+async def start(ctx):
+  print("function name: start") 
   global lol_squad
-  for i in member:
-    lol_squad.append(i)
-    print("Added: ", i)
-  print(lol_squad[0])
-  
-  
-  #print(lol_squad, "Here: ", type(lol_squad[0]))
-  #for members in ctx.author.voice.channel.members:
-  #  print("this: ", members.mention, type(members.mention))
-  #tmp_user = discord.Member.id
-  #await tmp_user.move_to(channel)
-    # await members.move_to(channel)
-
-# TODO:
-# Make a command which move all from team 1 and team 2 seperaly
-# team 1 = [lol_squad[0], lol_squad[1] ... lol_squad[4]]
-# $e [team1] channel_name
-# channel name is static
-
-
-@bot.command()
-async def channel(ctx):  
-  global lol_squad
+  vcl = voice_channel_list[voiceChannel_1]
   for user in lol_squad:
-    print("Primary channel switch:", voice_channel_list[voiceChannel_1])
-    await user.move_to(voice_channel_list[voiceChannel_1])
-  
+    try:
+      await user.move_to(vcl)
+      mbed = discord.Embed(title='{} moved to {}.'.format(user, vcl), description="Success!")
+    except:
+      mbed = discord.Embed(title='User problem', description="{} isn't in voice channels.".format(user))      
+    await ctx.send(embed=mbed)
+
   
  
 '''
@@ -137,7 +110,7 @@ async def team(ctx, *args): #When user add more args then 2
     server_curr_name = ctx.message.guild.name # name of server 
     # if not serverCheckInDatabase(server_curr_name):
     # AddCurrServerToDatabase(server_curr_name)
-    template = getDatabaseTamplate()
+   
     # server_content = getDatabaseByServerName(server_curr_name) 
    
 
