@@ -1,11 +1,10 @@
-# Version: 1.0.7
-import discord 
+import discord
 import os
 import random
-import json
-from keep_alive import keep_alive
+
 from discord.ext import commands, tasks
 from discord.ext.commands import check
+
 intents = discord.Intents.default()
 intents.members = True
 
@@ -46,61 +45,50 @@ def justify_score_board(team1,team2):
 # -------- USERS LIST -------- #
 def returnListOfSqad_lol(lol_squad):
   tmp = ">>> Here is your users list:\n"
-  iter = 1
-  for user in lol_squad:
-    tmp +=  f"{iter}\t" + str(user.name) + "\n"
-    iter+=1
-  iter = 1
+  for i in range(len(lol_squad)):
+    tmp +=  f"{i}\t" + str(lol_squad[i].name) + "\n"
   return tmp 
 
 
 
-
+# -------- SET PLAYERS -------- #
 @bot.command()
-async def set(ctx, *members : discord.Member):
-  print("function name: set")
+async def players(ctx, *members : discord.Member):
+  # Description
+  # Input users after 'at' (@) symbol. For example: $players @sanetro @someone @etc ... 
   global lol_squad 
   for user in members:
-    lol_squad.append(user)
-    print("Added: ", user)
-  
+    lol_squad.append(user)  
 
 # -------- MOVE ALL USERS -------- #
 @bot.command()
 async def start(ctx):
-  print("function name: start") 
+  # Description
+  # Most important. This sends to particular channels ('Team_1'; 'Team_2')
+  # It sends a embed (something like message, but with better border)
   global lol_squad
-  vcl = voice_channel_list[voiceChannel_1]
-  for user in lol_squad:
+  vc1 = voice_channel_list[voiceChannel_1]
+  vc2 = voice_channel_list[voiceChannel_2]
+  for i in range(len(lol_squad)):
     try:
-      await user.move_to(vcl)
-      mbed = discord.Embed(title='{} moved to {}.'.format(user, vcl), description="Success!")
+      if(i % 2 == 0):
+        await lol_squad[i].move_to(vc1)
+        mbed = discord.Embed(title='{} moved to {}.'.format(lol_squad[i].name, vc1),
+                          description="by {}".format(ctx.message.author.name),
+                          colour = discord.Colour.orange())
+      else:
+        await lol_squad[i].move_to(vc2)
+        mbed = discord.Embed(title='{} moved to {}.'.format(lol_squad[i].name, vc2),
+                          description="by {}".format(ctx.message.author.name),
+                          colour = discord.Colour.purple())
+      
     except:
-      mbed = discord.Embed(title='User problem', description="{} isn't in voice channels.".format(user))      
+      mbed = discord.Embed(title='Player problem', 
+                          description="{} isn't in voice channels.".format(user.name),
+                          colour = discord.Colour.red())      
     await ctx.send(embed=mbed)
 
   
- 
-'''
- # -------- TEAM COMMANDS - add -------- #
-  if args[0] == "add": # If i need to add user to list 
-    print(len(args) + len(lol_squad))
-    if len(args) + len(lol_squad) > 11: # you can't do it if users are more then 10
-      await ctx.send(f"I can't add more users! On list: {10 - len(lol_squad)} user")
-    else:
-      for i in range(1, len(args)): # add args to list till the end
-        lol_squad.append(args[i])
-      await ctx.send(f"Added: {args[1:]}\n") # inform me if you added
-
-  # -------- TEAM COMMANDS - remove -------- #
-  if args[0].lower() == "remove":  # delete every user name from list 
-    for i in range(1, len(args)):
-      try: 
-        lol_squad.remove(args[i]) # deleted: in list 
-        await ctx.send(f"Removed: {args[i]}\n") # deleted: message
-      except:
-        await ctx.send(f"Can't remove or doesn't exist: {args[i]}\n") # when user aren't in list
-'''
 
 # -------- TEAM COMMANDS -------- #
 @bot.command()
@@ -275,9 +263,9 @@ async def on_ready():
 
   await bot.change_presence(activity=discord.Game(name="$team help or mention"))  
 
+bot.run("Not this time :)")
 
-  
 
 
-keep_alive() # Flask serwer to keep bot alive 24/7
-bot.run(os.getenv("TOKEN2")) # My key to bot
+
+
