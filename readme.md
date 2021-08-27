@@ -10,8 +10,14 @@ After entering your friends' nicknames, the bot draws between 2 teams and distri
 <h2> Ideas </h2>
 
 <ul>
-    <li> Score board <img src="https://lh3.googleusercontent.com/proxy/9BoGPJIJLoci3MtbkYH6IjXdfof8yNtLezE-T7pj7wAtw88YVqmBjBRR8u-8OwkOLWi5PteHBAZ6QKeo_oenbhH8k_gSR-_L5FK5MPdY3efuCwhSXdC0AE02wL1NY9iKSY5luTaxp_PZU1IZyxGEaAAu7aJ8CLEc_rMQ6OWnh_x7ySsjBcNojw" width="20" height="20"> </li>
-
+    <li> Score board : by me <img src="https://lh3.googleusercontent.com/proxy/9BoGPJIJLoci3MtbkYH6IjXdfof8yNtLezE-T7pj7wAtw88YVqmBjBRR8u-8OwkOLWi5PteHBAZ6QKeo_oenbhH8k_gSR-_L5FK5MPdY3efuCwhSXdC0AE02wL1NY9iKSY5luTaxp_PZU1IZyxGEaAAu7aJ8CLEc_rMQ6OWnh_x7ySsjBcNojw" width="20" height="20"> </li>
+    <li> Team maker : by me (add, remove, clear, move, rand) <img src="https://lh3.googleusercontent.com/proxy/9BoGPJIJLoci3MtbkYH6IjXdfof8yNtLezE-T7pj7wAtw88YVqmBjBRR8u-8OwkOLWi5PteHBAZ6QKeo_oenbhH8k_gSR-_L5FK5MPdY3efuCwhSXdC0AE02wL1NY9iKSY5luTaxp_PZU1IZyxGEaAAu7aJ8CLEc_rMQ6OWnh_x7ySsjBcNojw" width="20" height="20"> </li>
+    <li> Create environment : by me <img src="https://lh3.googleusercontent.com/proxy/9BoGPJIJLoci3MtbkYH6IjXdfof8yNtLezE-T7pj7wAtw88YVqmBjBRR8u-8OwkOLWi5PteHBAZ6QKeo_oenbhH8k_gSR-_L5FK5MPdY3efuCwhSXdC0AE02wL1NY9iKSY5luTaxp_PZU1IZyxGEaAAu7aJ8CLEc_rMQ6OWnh_x7ySsjBcNojw" width="20" height="20"> </li>
+    <li> Delay : by Jasiu </li>
+    <li> Win counter in personal role : by me </li>
+    <li> Ranking by win - list : by me </li>
+    
+</ul>
 <h2> Commands </h2>
 
 First what you should do is type <b>$team help</b> and you will see:
