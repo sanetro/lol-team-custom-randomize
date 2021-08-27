@@ -8,6 +8,7 @@
 import discord
 import os
 import random
+from CTLR_TOKEN import TOKEN
 
 from discord.ext import commands, tasks
 from discord.ext.commands import check
@@ -99,7 +100,7 @@ async def start(ctx):
       
     except:
       mbed = discord.Embed(title='Player problem', 
-                          description="{} isn't in voice channels.".format(user.name),
+                          description="{} isn't in voice channels.".format(lol_squad[i].name),
                           colour = discord.Colour.red())      
     await ctx.send(embed=mbed)
 
@@ -299,7 +300,7 @@ async def on_ready():
 
   await bot.change_presence(activity=discord.Game(name="$team help or mention"))  
 
-bot.run("")
+bot.run(TOKEN)
 
 
 
