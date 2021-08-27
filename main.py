@@ -1,3 +1,10 @@
+# TODO: 
+# Draws to teams (lol_squad)
+# Add player to  lol_squad fill to 10 players
+# Remove player to  lol_squad : if empty : print info
+# Rand players, refactor old structure 
+# Idea by Jasiu  
+# Idea by Stowze
 import discord
 import os
 import random
@@ -16,6 +23,7 @@ team1, team2 = 0, 0
 
 
 bot = commands.Bot(intents=intents, command_prefix='$') # Client object app name - bot, command always start with '$' before
+TOKEN = ""
 
 
 
@@ -50,6 +58,13 @@ def returnListOfSqad_lol(lol_squad):
   return tmp 
 
 
+# -------- MOVE ALL USERS -------- #
+#@bot.command()
+#async def (ctx):
+  # Description
+  # Most important. This sends to particular channels ('Team_1'; 'Team_2')
+  # It sends a embed (something like message, but with better border)
+
 
 # -------- SET PLAYERS -------- #
 @bot.command()
@@ -72,12 +87,12 @@ async def start(ctx):
   for i in range(len(lol_squad)):
     try:
       if(i % 2 == 0):
-        await lol_squad[i].move_to(vc1)
+        await lol_squad[i].name.move_to(vc1)
         mbed = discord.Embed(title='{} moved to {}.'.format(lol_squad[i].name, vc1),
                           description="by {}".format(ctx.message.author.name),
                           colour = discord.Colour.orange())
       else:
-        await lol_squad[i].move_to(vc2)
+        await lol_squad[i].name.move_to(vc2)
         mbed = discord.Embed(title='{} moved to {}.'.format(lol_squad[i].name, vc2),
                           description="by {}".format(ctx.message.author.name),
                           colour = discord.Colour.purple())
@@ -89,6 +104,27 @@ async def start(ctx):
     await ctx.send(embed=mbed)
 
   
+ 
+'''
+ # -------- TEAM COMMANDS - add -------- #
+  if args[0] == "add": # If i need to add user to list 
+    print(len(args) + len(lol_squad))
+    if len(args) + len(lol_squad) > 11: # you can't do it if users are more then 10
+      await ctx.send(f"I can't add more users! On list: {10 - len(lol_squad)} user")
+    else:
+      for i in range(1, len(args)): # add args to list till the end
+        lol_squad.append(args[i])
+      await ctx.send(f"Added: {args[1:]}\n") # inform me if you added
+
+  # -------- TEAM COMMANDS - remove -------- #
+  if args[0].lower() == "remove":  # delete every user name from list 
+    for i in range(1, len(args)):
+      try: 
+        lol_squad.remove(args[i]) # deleted: in list 
+        await ctx.send(f"Removed: {args[i]}\n") # deleted: message
+      except:
+        await ctx.send(f"Can't remove or doesn't exist: {args[i]}\n") # when user aren't in list
+'''
 
 # -------- TEAM COMMANDS -------- #
 @bot.command()
@@ -263,7 +299,7 @@ async def on_ready():
 
   await bot.change_presence(activity=discord.Game(name="$team help or mention"))  
 
-bot.run("Not this time :)")
+bot.run("")
 
 
 
