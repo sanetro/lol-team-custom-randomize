@@ -1,33 +1,19 @@
-# TODO: 
-# Draws to teams (lol_squad)
-# Add player to  lol_squad fill to 10 players
-# Remove player to  lol_squad : if empty : print info
-# Rand players, refactor old structure 
-# Idea by Jasiu  
-# Idea by Stowze
 import discord
 import os
 import random
-from CTLR_TOKEN import TOKEN
-
 from discord.ext import commands, tasks
 from discord.ext.commands import check
 
-intents = discord.Intents.default()
-intents.members = True
-
-
+intents = discord.Intents.default() # Discord policy
+intents.members = True # Discord policy
 lol_squad = [] # Leageu of legends teams container
-voice_channel_list = []
-voiceChannel_1, voiceChannel_2 = None, None
-team1, team2 = 0, 0
+voice_channel_list = [] # Fetch all channels from server 
+voiceChannel_1, voiceChannel_2 = None, None # Index of voice channel
+team1, team2 = 0, 0 # Points
 
 
-bot = commands.Bot(intents=intents, command_prefix='$') # Client object app name - bot, command always start with '$' before
+bot = commands.Bot(intents=intents, command_prefix='$', help_command=None) # Client object app name - bot, command always start with '$' before
 TOKEN = ""
-
-
-
 
 # -------- TEAMS BOARD -------- #
 def justify_lead_board(lol_squad):
@@ -51,171 +37,109 @@ def justify_score_board(team1,team2):
   '''
   return tmp
 
-# -------- USERS LIST -------- #
+# -------- PLAYERS LIST -------- #
 def returnListOfSqad_lol(lol_squad):
   tmp = ">>> Here is your users list:\n"
-  for i in range(len(lol_squad)):
-    tmp +=  f"{i}\t" + str(lol_squad[i].name) + "\n"
+  for i in range(len(lol_squad)): tmp +=  f"{i}\t" + str(lol_squad[i].name) + "\n"
   return tmp 
 
 
-# -------- MOVE ALL USERS -------- #
-#@bot.command()
-#async def (ctx):
-  # Description
-  # Most important. This sends to particular channels ('Team_1'; 'Team_2')
-  # It sends a embed (something like message, but with better border)
+# -------- RANDOMIZE ALL PLAYERS -------- #
+# Description : shuffle and draws teams 
+@bot.command(name="rand", description="Shuffle and draws teams ")
+async def rand(ctx):  
+  teamINFO = ""
+  random.shuffle(lol_squad)
 
+  teamINFO += "\n╔═════╬**Team 1**╬═════\n║\n"
+  for i in range(0, len(lol_squad), 2): teamINFO += f" ╠ **{lol_squad[i].name}**\n"
+  teamINFO += "\n\n╔═════╬**Team 2**╬═════\n║\n"
+  for i in range(1, len(lol_squad), 2): teamINFO += f" ╠ **{lol_squad[i].name}**\n" 
+  teamINFO += "\n\nGood luck! dont't forget to ban Jhin."
+
+  mbed = discord.Embed(title='Lol Team Custom Randomize', description=teamINFO, colour = discord.Colour.default())  
+  await ctx.send(embed=mbed)
 
 # -------- SET PLAYERS -------- #
-@bot.command()
-async def players(ctx, *members : discord.Member):
-  # Description
-  # Input users after 'at' (@) symbol. For example: $players @sanetro @someone @etc ... 
+# Description
+# Input users after 'at' (@) symbol. For example: $players @sanetro @someone @etc ... 
+@bot.command(name="players", description="Add to list a player to draw for one of the team")
+async def players(ctx, *members : discord.Member):  
   global lol_squad 
   for user in members:
-    lol_squad.append(user)  
+    if not user in lol_squad:
+      lol_squad.append(user)
+    else:
+      await ctx.send(f"The **{user.name}** is already on the list.")
+
+# -------- REMOVE PLAYERS -------- #
+# Description
+# Same function as players() but it removes player from list
+@bot.command(name="remove", description="Remove a player from list")
+async def remove(ctx, *members : discord.Member):  
+  global lol_squad 
+  for user in members:
+    if user in lol_squad:
+      lol_squad.remove(user)
+    else:
+      await ctx.send(f"The **{user.name}** isn't on the list.")
+
+# -------- CLEAR PLAYERS -------- #
+@bot.command(name="clear", description="Clear list of squad")
+async def clear(ctx):  
+  global lol_squad; lol_squad = []; await ctx.send(f"List is empty.")
 
 # -------- MOVE ALL USERS -------- #
-@bot.command()
-async def start(ctx):
-  # Description
-  # Most important. This sends to particular channels ('Team_1'; 'Team_2')
-  # It sends a embed (something like message, but with better border)
+# Description
+# Most important. This sends members to particular channels ('Team_1'; 'Team_2')
+# It sends a embed (something like message, but with better border)
+@bot.command(name="start", description="It moves teams to channels. (Start of the game)")
+async def start(ctx):  
   global lol_squad
   vc1 = voice_channel_list[voiceChannel_1]
   vc2 = voice_channel_list[voiceChannel_2]
   for i in range(len(lol_squad)):
     try:
       if(i % 2 == 0):
-        await lol_squad[i].name.move_to(vc1)
+        await lol_squad[i].move_to(vc1)
         mbed = discord.Embed(title='{} moved to {}.'.format(lol_squad[i].name, vc1),
-                          description="by {}".format(ctx.message.author.name),
+                          description="start by {}".format(ctx.message.author.name),
                           colour = discord.Colour.orange())
       else:
-        await lol_squad[i].name.move_to(vc2)
+        await lol_squad[i].move_to(vc2)
         mbed = discord.Embed(title='{} moved to {}.'.format(lol_squad[i].name, vc2),
-                          description="by {}".format(ctx.message.author.name),
+                          description="start by {}".format(ctx.message.author.name),
                           colour = discord.Colour.purple())
       
     except:
       mbed = discord.Embed(title='Player problem', 
-                          description="{} isn't in voice channels.".format(lol_squad[i].name),
+                          description="{} isn't in voice channel.".format(lol_squad[i].name),
                           colour = discord.Colour.red())      
     await ctx.send(embed=mbed)
 
-  
- 
-'''
- # -------- TEAM COMMANDS - add -------- #
-  if args[0] == "add": # If i need to add user to list 
-    print(len(args) + len(lol_squad))
-    if len(args) + len(lol_squad) > 11: # you can't do it if users are more then 10
-      await ctx.send(f"I can't add more users! On list: {10 - len(lol_squad)} user")
-    else:
-      for i in range(1, len(args)): # add args to list till the end
-        lol_squad.append(args[i])
-      await ctx.send(f"Added: {args[1:]}\n") # inform me if you added
+# -------- SHOW - list of squad -------- #
+@bot.command(name="show", description="Simple list of players in squad")
+async def show(ctx): 
+  await ctx.send(returnListOfSqad_lol(lol_squad))
 
-  # -------- TEAM COMMANDS - remove -------- #
-  if args[0].lower() == "remove":  # delete every user name from list 
-    for i in range(1, len(args)):
-      try: 
-        lol_squad.remove(args[i]) # deleted: in list 
-        await ctx.send(f"Removed: {args[i]}\n") # deleted: message
-      except:
-        await ctx.send(f"Can't remove or doesn't exist: {args[i]}\n") # when user aren't in list
-'''
 
-# -------- TEAM COMMANDS -------- #
-@bot.command()
-async def team(ctx, *args): #When user add more args then 2
-    global lol_squad, team1, team2 # containers
-    
-    server_curr_name = ctx.message.guild.name # name of server 
-    # if not serverCheckInDatabase(server_curr_name):
-    # AddCurrServerToDatabase(server_curr_name)
-   
-    # server_content = getDatabaseByServerName(server_curr_name) 
-   
+# -------- SCORE -------- #
+@bot.command(name="score", description="Shows score of team one and team two")
+async def score(ctx): 
+  await ctx.send(justify_score_board(team1,team2))
 
-    args = list(args) # change zipped args from touple to array / list 
-    args[0] = args[0].lower() # nessecery but protect you againts CAPSLOCK
-    helpArgs = '''
-    *List of command:*
-     - **$team showlist** - show list of added users
-     - **$team clear** - Clear all list of players
-     - **$team add** *<user> <user> ... - add user to the list
-     - **$team remove** *<user> <user> ... - remove user from the list
-     - **$team rand** - Randomize all teams (team 1, team 2)
-     - **$team score** - Show score of team 1 and 2
-     - **$team addpoint 1** - add one point to team 1
-     - **$team addpoint 2** - add one point to team 2
-     - **$team reset** - Clear scores of team 1 and 2
-    '''
-    try:
-      # -------- TEAM COMMANDS - help -------- #
-      if args[0] in ["help", "-h", "h"]: # If i need help just type this 
-        await ctx.send(helpArgs)
+# -------- addpoint - team 1 - team 2 -------- #
+@bot.command(name="addpoint", description="Give one point to team. $team 1 - gives one point to first team. $team 2 - gives one point to second team")
+async def addpoint(ctx, index): 
+  global team1, team2
+  if index == "1": team1 += 1
+  elif index == "2": team2 += 1
+  else: await ctx.send("Please choose between 1 and 2. Thanks.")    
+  if index == "1" or index == "2": await ctx.send(justify_score_board(team1,team2)) 
 
-      # -------- TEAM COMMANDS - showlist -------- #
-      if args[0] == "showlist": # show list of added users 
-        await ctx.send(returnListOfSqad_lol(lol_squad))
-
-      # -------- TEAM COMMANDS - clear -------- #
-      if args[0] == "clear": # If i need to clean up list 
-        lol_squad = []
-        await ctx.send("List is empty.")
-
-      # -------- TEAM COMMANDS - rand -------- #
-      if args[0] == "rand": # here is a output of randomized users in each team
-        if len(lol_squad) == 10:
-          random.shuffle(lol_squad)
-          await ctx.send(justify_lead_board(lol_squad))
-        else:
-          await ctx.send(f"Not enought number of users, wanted: {10 - len(lol_squad)}") # if you have less then 10 users
-
-      # -------- TEAM COMMANDS - score -------- #
-      if args[0] == "score":
-        await ctx.send(justify_score_board(team1,team2))
-
-      # -------- TEAM COMMANDS - addpoint - 1 -------- #
-      if args[0] == "addpoint" and args[1] == "1":
-        if team1 < 10:
-          team1 += 1
-        await ctx.send(justify_score_board(team1,team2)) 
-
-      # -------- TEAM COMMANDS - addpoint - 2 -------- #
-      if args[0] == "addpoint" and args[1] == "2":
-        if team2 < 11:
-          team2 += 1
-        await ctx.send(justify_score_board(team1,team2))
-      
-      # -------- TEAM COMMANDS - reset -------- #
-      if args[0] == "reset":
-        team2, team1 = 0, 0
-        await ctx.send(justify_score_board(team1,team2))
-
-    # -------- TEAM COMMANDS - error -------- #
-    except IndexError:
-      await ctx.send("Wrong command: type **$team help**") # bad entry
-pass
-
-@bot.command()
-async def server(ctx):   
+@bot.command(name="about", description="All you need to know about me and bot.")
+async def about(ctx):   
   await ctx.message.author.send(voice_channel_list[voiceChannel_1])
-   
-
-
-
-@bot.command()
-@commands.has_permissions(move_members=True)
-async def move(ctx, *, channel : discord.VoiceChannel):
-    author_ch = ctx.author.voice.channel.mention
-    for members in ctx.author.voice.channel.members:
-        await members.move_to(channel)
-    await ctx.send(f'Moved everyone in {author_ch} to {channel.mention}!')
-
 
 # -------- QUICK INFORMATION - when mention bot -------- #
 @bot.event
@@ -254,8 +178,8 @@ def fetchVoiceChannels():
 
 
 # -------- CREATE CHANNELS -------- #
-@bot.command()
-async def setup(ctx):
+@bot.command(name="setenv", description="Create environment for bot to set up your homies in voice channels. (TYPE THIS COMMAND FIRST)")
+async def setenv(ctx):
   guild = ctx.guild  
   mbed = discord.Embed(title='Bad permission', description='Can not create a channels.')
   if ctx.author.guild_permissions.manage_channels:
@@ -268,9 +192,9 @@ async def setup(ctx):
   else:     
     await ctx.send("No permissions")
 
-# -------- DELETE CHANNELS -------- #
-@bot.command()
-async def delete_setup(ctx):
+# -------- DELETE CHANNELS OF ENV -------- #
+@bot.command(name="delete_env", description="Show the all list of members in this server")
+async def delete_env(ctx):
   existing_channel1 = discord.utils.get(ctx.guild.channels, name="Team_1")
   existing_channel2 = discord.utils.get(ctx.guild.channels, name="Team_2")
   existing_channel3 = discord.utils.get(ctx.guild.channels, name="Lobby")
@@ -281,24 +205,22 @@ async def delete_setup(ctx):
   else:
     await ctx.send(f'No channel was found')
 
-@bot.command(name="members", description="Show the all list of members in this server")
-async def members(ctx):
-  [print(member) for member in ctx.guild.members]  
-
-# -------- WAKE UP SAMURAI - we have bot to burn -------- #
+@bot.command()
+async def help(ctx):
+  helpMessage = ">>> **List of commands**\n\n"
+  helpMessage += "delete_env - Show the all list of members in this server\n"
+  await ctx.send(helpMessage)
+# -------- WAKE UP BOT - we have a world to burn -------- #
 @bot.event
 async def on_ready(): 
   msg = f'''
   BOT NAME     {bot.user.name}
   BOT ID       {bot.user.id}
   DIRECTORY    {os.path.abspath(os.getcwd())}
-
-  ''' 
-  print(msg)
-  
+  '''
+  print(msg)  
   fetchVoiceChannels()
-
-  await bot.change_presence(activity=discord.Game(name="$team help or mention"))  
+  await bot.change_presence(activity=discord.Game(name="$help or mention"))  
 
 bot.run(TOKEN)
 
