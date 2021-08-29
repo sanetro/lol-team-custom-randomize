@@ -75,7 +75,7 @@ async def players(ctx, *members : discord.Member):
 # -------- REMOVE PLAYERS -------- #
 # Description
 # Same function as players() but it removes player from list
-@bot.command(name="remove", description="Remove a player from list")
+@bot.command(name="remove", description="Remove player from list")
 async def remove(ctx, *members : discord.Member):  
   global lol_squad 
   for user in members:
@@ -207,8 +207,31 @@ async def delete_env(ctx):
 
 @bot.command()
 async def help(ctx):
-  helpMessage = ">>> **List of commands**\n\n"
-  helpMessage += "delete_env - Show the all list of members in this server\n"
+  helpMessage = """>>> \n**List of commands**\n
+  **delete_env**                Show the all list of members in this server
+
+  **setenv**                        Create environment for bot to set up your
+                                       homies in voice channels. (TYPE THIS FIRST)
+
+  **addpoint**                    Give one point to team:
+                                       $addpoint 1 - gives one point to first team
+                                       $addpoint 2 - gives one point to second team
+
+  **about**                         All you need to know about me and bot      
+
+  **score**                          Shows score of team one and team two
+
+  **start**                           It moves teams to channels. (Start of the game)
+
+  **clear**                           Clear list of squad
+
+  **remove**                       Remove player from list
+
+  **players**                      Add to list a player to draw for one of the team
+
+  **rand**                           Shuffle and draws teams
+  """
+
   await ctx.send(helpMessage)
 # -------- WAKE UP BOT - we have a world to burn -------- #
 @bot.event
