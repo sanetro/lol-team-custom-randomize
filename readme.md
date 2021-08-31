@@ -54,4 +54,4 @@ List of command (prefix is '$') (example: $setenv):
 <p>Example 2</p>
 <img src="https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/example2.png?raw=true">
 <p>Example 3</p>
-<img src="https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/example2.png?raw=true">
+<img src="https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/example3.png?raw=true">
