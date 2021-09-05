@@ -10,7 +10,7 @@ lol_squad = [] # Leageu of legends teams container
 voice_channel_list = [] # Fetch all channels from server 
 voiceChannel_1, voiceChannel_2 = None, None # Index of voice channel
 team1, team2 = 0, 0 # Points
-
+#sanetro
 
 bot = commands.Bot(intents=intents, command_prefix='$', help_command=None) # Client object app name - bot, command always start with '$' before
 TOKEN = ""
@@ -36,11 +36,11 @@ def justify_score_board(team1,team2):
   -------------------------
   '''
   return tmp
-
+ 
 # -------- PLAYERS LIST -------- #
 def returnListOfSqad_lol(lol_squad):
-  tmp = ">>> Here is your users list:\n"
-  for i in range(len(lol_squad)): tmp +=  f"{i}\t" + str(lol_squad[i].name) + "\n"
+  tmp = ">>> \n**Here is your players list**:\n\n"
+  for i in range(len(lol_squad)): tmp +=  f"{i+1}\t" + str(lol_squad[i].name) + "\n"
   return tmp 
 
 
@@ -123,17 +123,50 @@ async def show(ctx):
   await ctx.send(returnListOfSqad_lol(lol_squad))
 
 
+# -------- RESET -------- #
+@bot.command(name="reset", description="reset score")
+async def reset(ctx): 
+  team1, team2 = 0, 0; await ctx.send(justify_score_board(team1,team2))
+
 # -------- SCORE -------- #
 @bot.command(name="score", description="Shows score of team one and team two")
 async def score(ctx): 
   await ctx.send(justify_score_board(team1,team2))
 
+# -------- TOP -------- #
+@bot.command(name="top", description="Shows top list")
+async def top(ctx):
+  playersList = "\n\n"
+  with open("Toplist.txt", "r") as file:
+    for index, line in enumerate(file, start=1):
+      record = line.split()
+      if index == 1:
+        playersList += f"\n{index}                         ✨👑 **{record[0]}** 👑✨ ({record[1]})\n\n"
+      elif index == 2:
+        playersList += f"{index}                                ✨ **{record[0]}** ✨ ({record[1]})\n\n"
+      elif index == 3:
+        playersList += f"{index}                                🔥 **{record[0]}** 🔥 ({record[1]})\n\n"
+        playersList += "════════════════════════════\n"
+      else:
+        playersList += f"{index} **{record[0]}** ({record[1]})\n"
+      
+        
+  print(playersList)
+  mbed = discord.Embed(title='═════LIST OF BEST PLAYERS═════',
+                          description=playersList,
+                          colour = discord.Colour.gold()) 
+  await ctx.send(embed=mbed)
+
 # -------- addpoint - team 1 - team 2 -------- #
 @bot.command(name="addpoint", description="Give one point to team. $team 1 - gives one point to first team. $team 2 - gives one point to second team")
 async def addpoint(ctx, index): 
   global team1, team2
-  if index == "1": team1 += 1
-  elif index == "2": team2 += 1
+  if index == "1": 
+    team1 += 1
+    #for i in range(0, len(lol_squad), 2):
+  elif index == "2": 
+    team2 += 1
+    
   else: await ctx.send("Please choose between 1 and 2. Thanks.")    
   if index == "1" or index == "2": await ctx.send(justify_score_board(team1,team2)) 
 
@@ -230,7 +263,13 @@ async def help(ctx):
   **players**                      Add to list a player to draw for one of the team
 
   **rand**                           Shuffle and draws teams
-  """
+
+  **reset**                         Reset score
+
+  **show**                           Show score
+
+  **top**                              Show list of players who got many wins (TOP of)
+  """ 
 
   await ctx.send(helpMessage)
 # -------- WAKE UP BOT - we have a world to burn -------- #
@@ -243,7 +282,9 @@ async def on_ready():
   '''
   print(msg)  
   fetchVoiceChannels()
-  await bot.change_presence(activity=discord.Game(name="$help or mention"))  
+  await bot.change_presence(activity=discord.Game(name="$help or mention"))
+
+  
 
 bot.run(TOKEN)
 
