@@ -10,10 +10,28 @@ lol_squad = [] # Leageu of legends teams container
 voice_channel_list = [] # Fetch all channels from server 
 voiceChannel_1, voiceChannel_2 = None, None # Index of voice channel
 team1, team2 = 0, 0 # Points
+objectsOfPlayers = []
 #sanetro
 
 bot = commands.Bot(intents=intents, command_prefix='$', help_command=None) # Client object app name - bot, command always start with '$' before
-TOKEN = ""
+TOKEN = "ODM2Mzc4NTQ0MzI1MDAxMjM3.YIdIOA.5BkGawBjp-AewJxABfHmhscsyYQ"
+
+class Player:
+
+  def __init__(self, name, point=0):    
+    self.point = point
+    self.name = name 
+
+  def add(self):
+    self.point = self.point + 1
+
+  def update(self, nameImport, pointImport):
+    self.point = pointImport
+    self.name = nameImport
+
+  def id(self):
+    print(self.name, self.point)
+
 
 # -------- TEAMS BOARD -------- #
 def justify_lead_board(lol_squad):
@@ -69,9 +87,10 @@ async def players(ctx, *members : discord.Member):
   for user in members:
     if not user in lol_squad:
       lol_squad.append(user)
+      objectsOfPlayers.append(Player(user.name))
     else:
       await ctx.send(f"The **{user.name}** is already on the list.")
-
+#for member in lol_squad: objectsOfPlayers.append(Player(member.name))
 # -------- REMOVE PLAYERS -------- #
 # Description
 # Same function as players() but it removes player from list
@@ -133,42 +152,75 @@ async def reset(ctx):
 async def score(ctx): 
   await ctx.send(justify_score_board(team1,team2))
 
+
+
+def bubbleSort(arr):
+  n = len(arr)
+  for i in range(n - 1):
+    for j in range(0, n - i - 1):
+      if arr[j].point < arr[j + 1].point:
+        arr[j].point, arr[j + 1].point = arr[j + 1].point, arr[j].point
+        arr[j].name, arr[j + 1].name = arr[j + 1].name, arr[j].name
+  return arr
+
+
+
+
+
 # -------- TOP -------- #
 @bot.command(name="top", description="Shows top list")
-async def top(ctx):
-  playersList = "\n\n"
+async def top(ctx): 
+  
   with open("Toplist.txt", "r") as file:
-    for index, line in enumerate(file, start=1):
+    for index, line in enumerate(file):
       record = line.split()
-      if index == 1:
-        playersList += f"\n{index}                         ✨👑 **{record[0]}** 👑✨ ({record[1]})\n\n"
+      objectsOfPlayers.append(Player(record[0], int(record[1]))) # 0 - name; 1 - points
+  file.close()
+
+  playersList = "\n\n"
+  sortedList = sorted(objectsOfPlayers, key=lambda x: x.point, reverse=True)    
+  
+  for index in range(len(sortedList)-1):
+      if index == 0:
+        playersList += f"\n{index+1}                         ✨👑 **{sortedList[index].name}** 👑✨ ({sortedList[index].point})\n\n"
+      elif index == 1:
+        playersList += f"{index+1}                                ✨ **{sortedList[index].name}** ✨ ({sortedList[index].point})\n\n"
       elif index == 2:
-        playersList += f"{index}                                ✨ **{record[0]}** ✨ ({record[1]})\n\n"
-      elif index == 3:
-        playersList += f"{index}                                🔥 **{record[0]}** 🔥 ({record[1]})\n\n"
+        playersList += f"{index+1}                                🔥 **{sortedList[index].name}** 🔥 ({sortedList[index].point})\n\n"
         playersList += "════════════════════════════\n"
       else:
-        playersList += f"{index} **{record[0]}** ({record[1]})\n"
+        playersList += f"{index+1} **{sortedList[index].name}** ({sortedList[index].point})\n"
       
-        
-  print(playersList)
   mbed = discord.Embed(title='═════LIST OF BEST PLAYERS═════',
                           description=playersList,
-                          colour = discord.Colour.gold()) 
+                          colour = discord.Colour.gold())
   await ctx.send(embed=mbed)
 
 # -------- addpoint - team 1 - team 2 -------- #
 @bot.command(name="addpoint", description="Give one point to team. $team 1 - gives one point to first team. $team 2 - gives one point to second team")
 async def addpoint(ctx, index): 
-  global team1, team2
+  global team1, team2, objectsOfPlayers
+  
+  
+  
+  
+
+  objectsOfPlayers = bubbleSort(objectsOfPlayers)
+  
+
+  for player in objectsOfPlayers: print(player.name, player.point)
+
+
   if index == "1": 
     team1 += 1
-    #for i in range(0, len(lol_squad), 2):
+    for i in range(0, len(objectsOfPlayers), 2): objectsOfPlayers[i].point += 1
   elif index == "2": 
     team2 += 1
-    
-  else: await ctx.send("Please choose between 1 and 2. Thanks.")    
-  if index == "1" or index == "2": await ctx.send(justify_score_board(team1,team2)) 
+    for i in range(1, len(objectsOfPlayers), 2): objectsOfPlayers[i].point += 1
+  else: 
+    await ctx.send("Please choose between 1 and 2. Thanks.")    
+
+  if index == "1" or index == "2": await ctx.send(justify_score_board(team1, team2)) 
 
 @bot.command(name="about", description="All you need to know about me and bot.")
 async def about(ctx):   
