@@ -14,7 +14,7 @@ objectsOfPlayers = []
 #sanetro
 
 bot = commands.Bot(intents=intents, command_prefix='$', help_command=None) # Client object app name - bot, command always start with '$' before
-TOKEN = "ODM2Mzc4NTQ0MzI1MDAxMjM3.YIdIOA.5BkGawBjp-AewJxABfHmhscsyYQ"
+TOKEN = ""
 
 class Player:
 
