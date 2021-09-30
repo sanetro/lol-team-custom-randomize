@@ -15,7 +15,7 @@ globalPlayers = []
 #sanetro
 
 bot = commands.Bot(intents=intents, command_prefix='$', help_command=None) # Client object app name - bot, command always start with '$' before
-TOKEN = ""
+TOKEN = "ODM2Mzc4NTQ0MzI1MDAxMjM3.YIdIOA.96DQt9PKaMtHuKpkNDoM60pRW4U"
 
 class Player:
 
@@ -91,12 +91,11 @@ async def players(ctx, *members : discord.Member):
   for user in members:
     if not user in lol_squad:
       lol_squad.append(user)
-      globalPlayers.append({"name" : user.name, "points" : 0})
+      globalPlayers.append(Player(user.name))
     else:
       await ctx.send(f"The **{user.name}** is already on the list.")
   await ctx.send(returnListOfSqad_lol(lol_squad))
 #for member in lol_squad: objectsOfPlayers.append(Player(member.name))
-
 # -------- REMOVE PLAYERS -------- #
 # Description
 # Same function as players() but it removes player from list
@@ -193,50 +192,34 @@ async def top(ctx):
 @bot.command(name="addpoint", description="Give one point to team. $team 1 - gives one point to first team. $team 2 - gives one point to second team")
 async def addpoint(ctx, index): 
   global team1, team2
-  
-  fileList = []
+  objectsOfPlayers = []
 
-  with open("Toplist.txt", "r") as f:
-    for data in f:        
-      row = data.split()
-      fileList.append({"name" : row[0], "points" : int(row[1])})       
-    f.close()
+  with open("Toplist.txt", "r") as file:
+    for line in file:
+      record = line.split()
+      print(record[0], int(record[1]), type(record[0]), type(int(record[1])))
+      objectsOfPlayers.append(Player(record[0], int(record[1]))) # 0 - name; 1 - points
+  file.close()
 
-  for innerUser in globalPlayers:
-    print("For: ", innerUser["name"])
-    for user in fileList:
-        print("\t", user["name"], user["points"])
-        if user["name"] == innerUser["name"]:
-            break
-    else:
-        fileList.append(innerUser)
-        print("\t", innerUser["name"], "added to the list.")
+  for user in globalPlayers:
+    if not user in objectsOfPlayers:
+       objectsOfPlayers.append(Player(user.name, 0))
 
-  
+  with open("Toplist.txt", "w") as file:
+    for user in objectsOfPlayers:
+      file.write(f"{user.name} {str(user.point)}\n")
+  file.close()
         
-  
+  #TODO I must solve what happens to user.name, I need string not object 
 
   if index == "1": 
     team1 += 1
-    for innerUser in globalPlayers:
-      for i in range(0, len(fileList), 2):
-        if innerUser["name"] == fileList[i]["name"]:
-          fileList[i]["points"] = int(fileList[i]["points"]) =+ 1
+    for i in range(0, len(objectsOfPlayers), 2): objectsOfPlayers[i].add()
   elif index == "2": 
     team2 += 1
-    for innerUser in globalPlayers:
-      for i in range(1, len(fileList), 2):
-        if innerUser["name"] == fileList[i]["name"]:
-          fileList[i]["points"] = int(fileList[i]["points"]) =+ 1
+    for i in range(1, len(objectsOfPlayers), 2): objectsOfPlayers[i].add()
   else: 
     await ctx.send("Please choose between 1 and 2. Thanks.", index)
-  
-  with open("Toplist.txt", "w") as file:
-    for user in fileList:
-      tmp = f"{user['name']} {user['points']}\n"
-      file.write(tmp)
-  file.close()
-
   if index == "1" or index == "2": await ctx.send(justify_score_board(team1, team2)) 
 
 

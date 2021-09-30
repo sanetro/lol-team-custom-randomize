@@ -1,0 +1,7 @@
+user1 165
+user2 24
+user3 58
+user4 198
+user5 125
+user6 74
+user7 49
