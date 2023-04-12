@@ -1,4 +1,4 @@
-# LoL Team Custom Randomize
+# Team Spliter
 <img src='https://github.com/sanetro/LoLTeamCustomRandomize/blob/master/img_example/logo.png?raw=true' alt="LoLTeamCustomRandomize Logo" width="200" height="200">
 
 This Bot is for players who want to play 5v5 in League of Legends.<br><br>
